@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuento Ricotero - Historias de la Mística</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        ricotero: {
+                            dark: '#0f0f11',
+                            card: '#18181b',
+                            border: '#27272a',
+                            red: '#ef4444',
+                            amber: '#f59e0b',
+                            accent: '#dc2626'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0f0f11;
+            color: #f4f4f5;
+        }
+        .rock-glow {
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.25);
+        }
+        .card-hover {
+            transition: all 0.2s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-3px);
+            border-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(239, 68, 68, 0.1);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f0f11;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ef4444;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans selection:bg-red-600 selection:text-white">
+
+    <!-- Header / Navegación (Sin logo gráfico) -->
+    <header class="bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800 sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white uppercase rock-glow">
+                        Cuento <span class="text-red-500">Ricotero</span>
+                    </h1>
+                    <p class="text-xs text-zinc-400 font-medium">Relatos de ruta, mística y rocanrol en tiempo real</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                <div id="connectionStatus" class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse" id="statusDot"></span>
+                    <span id="statusText">Conectando...</span>
+                </div>
+                <a href="#formSection" class="bg-red-600 hover:bg-red-500 text-white text-xs sm:text-sm font-bold uppercase tracking-wider px-4 py-2.5 rounded-xl shadow-lg shadow-red-600/20 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-pen-nib"></i> Publicar historia
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 space-y-10">
+
+        <!-- Banner de Bienvenida -->
+        <section class="bg-gradient-to-r from-zinc-900 via-zinc-900/90 to-zinc-950 border border-zinc-800 rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
+            <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute right-20 top-10 w-40 h-40 bg-amber-600/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="relative z-10 max-w-2xl space-y-3">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span> Sincronizado en la nube para toda la comunidad
+                </span>
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+                    "Vivir sólo cuesta vida..."
+                </h2>
+                <p class="text-sm sm:text-base text-zinc-300 leading-relaxed">
+                    Publicá tus cuentos de ruta, anécdotas de los Redondos y vivencias del Indio. Todo lo que escribas se comparte instantáneamente con otros ricoteros conectados.
+                </p>
+            </div>
+        </section>
+
+        <!-- Buscador y Filtros -->
+        <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div class="w-full sm:w-96 relative">
+                <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
+                <input type="text" id="searchInput" oninput="filterStories()" placeholder="Buscar por título, autor o palabras clave..." class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-red-500 transition-colors">
+            </div>
+            <div class="text-xs font-medium text-zinc-400">
+                Mostrando <span id="storyCount" class="text-red-400 font-bold">0</span> cuentos en la ruta
+            </div>
+        </div>
+
+        <!-- Muro de Historias -->
+        <div id="storiesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Renderizado dinámico en tiempo real -->
+        </div>
+
+        <!-- Estado Vacío -->
+        <div id="emptyState" class="hidden text-center py-16 bg-zinc-900/40 border border-dashed border-zinc-800 rounded-3xl p-8">
+            <div class="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-4 text-zinc-500 text-2xl">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-1">No se encontraron cuentos</h3>
+            <p class="text-sm text-zinc-400">Sé el primero en dejar tu testimonio o relato para la comunidad.</p>
+        </div>
+
+        <!-- Sección Formulario -->
+        <section id="formSection" class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-xl">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-4 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500">
+                        <i class="fa-solid fa-feather-pointed"></i>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Publicar un nuevo cuento ricotero</h3>
+                </div>
+                <span class="text-xs text-zinc-500">Online en vivo</span>
+            </div>
+
+            <form id="storyForm" onsubmit="handleFormSubmit(event)" class="space-y-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Tu Nombre / Apodo</label>
+                        <input type="text" id="authorInput" required placeholder="Ej. El Viajero de Haedo" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Título del Cuento</label>
+                        <input type="text" id="titleInput" required placeholder="Ej. 24 horas de bondi rumbo a Olavarría" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500 transition-colors">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Contenido de la Historia</label>
+                    <textarea id="contentInput" required rows="5" placeholder="Contá lo que viviste, la caravana, los amigos que hiciste en la ruta, la emoción al sonar los primeros acordes..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-red-500 transition-colors resize-none leading-relaxed"></textarea>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <button type="submit" id="submitBtn" class="bg-red-600 hover:bg-red-500 text-white font-bold text-sm uppercase tracking-wider px-6 py-3 rounded-xl shadow-lg shadow-red-600/20 transition-all flex items-center gap-2">
+                        <span>Publicar en la nube</span>
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-zinc-800 bg-zinc-950 py-10 mt-16 text-center text-xs text-zinc-500 space-y-2">
+        <p class="font-bold text-zinc-400 uppercase tracking-widest">Cuento Ricotero • Redonditos de Ricota & Indio Solari</p>
+        <p>Plataforma colaborativa en tiempo real para mantener viva la mística.</p>
+    </footer>
+
+    <!-- Modal de Lectura, Comentarios y Pogo -->
+    <div id="readModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-200">
+        <div id="readModalContent" class="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl relative">
+            <!-- Inyectado dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Toast de Notificación -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 bg-zinc-900 text-white font-semibold text-xs px-4 py-3 rounded-xl border border-zinc-700 shadow-2xl flex items-center gap-2.5 transform translate-y-20 opacity-0 transition-all duration-200">
+        <span id="toastIcon" class="text-red-500 text-sm"></span>
+        <span id="toastText">Acción realizada.</span>
+    </div>
+
+    <!-- Firebase y Lógica en Tiempo Real -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, updateDoc, doc, deleteDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Configuración y variables globales de Firebase
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'cuento-ricotero-default';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "demo", projectId: "demo" };
+
+        let app, db, auth;
+        let currentUser = null;
+        let allStories = [];
+        let searchQuery = '';
+        let currentOpenModalId = null;
+
+        window.initFirebase = async function() {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                const statusDot = document.getElementById('statusDot');
+                const statusText = document.getElementById('statusText');
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUser = user;
+                        statusDot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+                        statusText.textContent = 'En línea (Sincronizado)';
+                        subscribeToStories();
+                    }
+                });
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Error conectando a la nube:", err);
+                document.getElementById('statusDot').className = 'w-2 h-2 rounded-full bg-red-500';
+                document.getElementById('statusText').textContent = 'Modo local / Error de red';
+                loadFallbackStories();
+            }
+        };
+
+        function subscribeToStories() {
+            if (!db) return;
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'stories');
+            
+            onSnapshot(colRef, (snapshot) => {
+                allStories = [];
+                snapshot.forEach(docSnap => {
+                    allStories.push({
+                        id: docSnap.id,
+                        ...docSnap.data()
+                    });
+                });
+
+                allStories.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderStories();
+
+                if (currentOpenModalId) {
+                    openModal(currentOpenModalId);
+                }
+            }, (error) => {
+                console.error("Error en sincronización en tiempo real:", error);
+            });
+        }
+
+        function loadFallbackStories() {
+            allStories = [
+                {
+                    id: 'sample-1',
+                    title: 'La caravana infinita a Obras (1991)',
+                    author: 'El Mono de Caballito',
+                    date: '14/11/1991',
+                    createdAt: Date.now() - 3600000,
+                    content: 'Llegamos a Libertador con los dedos congelados y la campera de jean rota. Afuera de Obras era una jungla de banderas colgadas de los árboles y botellas pasando de mano en mano...',
+                    pogos: 142,
+                    comments: [
+                        { author: 'Flaco Cemento', text: '¡Imborrable esa noche hermano!' }
+                    ]
+                }
+            ];
+            renderStories();
+        }
+
+        window.renderStories = function() {
+            const grid = document.getElementById('storiesGrid');
+            const emptyState = document.getElementById('emptyState');
+            const countEl = document.getElementById('storyCount');
+            grid.innerHTML = '';
+
+            const filtered = allStories.filter(s => 
+                s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                s.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                s.content.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+
+            countEl.textContent = filtered.length;
+
+            if(filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filtered.forEach(story => {
+                const commentCount = story.comments ? story.comments.length : 0;
+                const pogosCount = story.pogos || 0;
+                const card = document.createElement('div');
+                card.className = 'bg-zinc-900 border border-zinc-800 rounded-3xl p-6 card-hover flex flex-col justify-between shadow-lg';
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-zinc-400 mb-3 pb-3 border-b border-zinc-800/80">
+                            <span class="font-semibold text-zinc-200 flex items-center gap-1.5">
+                                <i class="fa-solid fa-user-circle text-red-500 text-sm"></i> ${escapeHtml(story.author)}
+                            </span>
+                            <span class="bg-zinc-800/60 text-zinc-400 px-2.5 py-1 rounded-full text-[11px] font-medium">${story.date || 'Reciente'}</span>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-bold text-white mb-2 leading-snug">
+                            ${escapeHtml(story.title)}
+                        </h3>
+                        <p class="text-xs sm:text-sm text-zinc-300 leading-relaxed line-clamp-3 mb-6">
+                            ${escapeHtml(story.content)}
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-zinc-800/80 text-xs">
+                        <div class="flex items-center gap-2">
+                            <button onclick="givePogo('${story.id}')" class="bg-zinc-950 hover:bg-red-500/10 text-red-400 border border-zinc-800 px-3.5 py-2 rounded-xl font-semibold flex items-center gap-1.5 transition-colors group" title="Dar Pogo / Me gusta">
+                                <i class="fa-solid fa-fire group-hover:scale-110 transition-transform"></i> <span>${pogosCount}</span> Pogo
+                            </button>
+                            <button onclick="openModal('${story.id}')" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 px-3 py-2 rounded-xl font-semibold flex items-center gap-1.5 transition-colors">
+                                <i class="fa-solid fa-comment text-amber-500"></i> <span>${commentCount}</span>
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="openModal('${story.id}')" class="text-white font-bold hover:underline">
+                                Leer cuento &rarr;
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        window.filterStories = function() {
+            searchQuery = document.getElementById('searchInput').value;
+            renderStories();
+        }
+
+        window.handleFormSubmit = async function(e) {
+            e.preventDefault();
+            const author = document.getElementById('authorInput').value.trim();
+            const title = document.getElementById('titleInput').value.trim();
+            const content = document.getElementById('contentInput').value.trim();
+
+            if (!db) {
+                showToast('❌ Sin conexión a la nube en este momento.', 'info');
+                return;
+            }
+
+            const newStory = {
+                title,
+                author,
+                date: new Date().toLocaleDateString('es-AR'),
+                createdAt: Date.now(),
+                content,
+                pogos: 0,
+                comments: []
+            };
+
+            try {
+                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'stories');
+                await addDoc(colRef, newStory);
+                document.getElementById('storyForm').reset();
+                showToast('🔥 ¡Tu cuento ya está publicado en la nube para todos!');
+            } catch (err) {
+                console.error("Error al publicar:", err);
+                showToast('❌ Error al publicar el cuento.', 'info');
+            }
+        }
+
+        window.givePogo = async function(id) {
+            const story = allStories.find(s => s.id === id);
+            if (!story || !db) return;
+
+            const newPogos = (story.pogos || 0) + 1;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'stories', id);
+                await updateDoc(docRef, { pogos: newPogos });
+                showToast('🔥 ¡Pogo sumado al relato!');
+            } catch (err) {
+                console.error("Error al dar pogo:", err);
+            }
+        }
+
+        window.openModal = function(id) {
+            currentOpenModalId = id;
+            const story = allStories.find(s => s.id === id);
+            if(!story) return;
+
+            const modal = document.getElementById('readModal');
+            const content = document.getElementById('readModalContent');
+
+            let commentsHtml = '';
+            if(story.comments && story.comments.length > 0) {
+                story.comments.forEach(c => {
+                    commentsHtml += `
+                        <div class="bg-zinc-950 border border-zinc-800/80 rounded-2xl p-3.5 mb-2 text-xs space-y-1">
+                            <div class="flex items-center justify-between text-[11px] text-zinc-400">
+                                <span class="font-bold text-zinc-200">${escapeHtml(c.author)}</span>
+                                <span class="text-zinc-600">Comentario</span>
+                            </div>
+                            <p class="text-zinc-300 leading-relaxed">${escapeHtml(c.text)}</p>
+                        </div>
+                    `;
+                });
+            } else {
+                commentsHtml = `<p class="text-zinc-500 text-xs italic text-center py-4">Todavía no hay comentarios. ¡Sé el primero en opinar!</p>`;
+            }
+
+            content.innerHTML = `
+                <div class="flex justify-between items-start mb-5 border-b border-zinc-800 pb-4">
+                    <div>
+                        <span class="text-[11px] font-bold text-red-500 uppercase tracking-widest">${escapeHtml(story.author)}</span>
+                        <h2 class="text-xl sm:text-2xl font-black text-white mt-1 leading-tight">${escapeHtml(story.title)}</h2>
+                        <span class="text-[11px] text-zinc-500 mt-1 inline-block">${story.date || 'Reciente'}</span>
+                    </div>
+                    <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="text-zinc-200 text-sm sm:text-base leading-relaxed whitespace-pre-line mb-6 max-h-64 overflow-y-auto bg-zinc-950 p-5 rounded-2xl border border-zinc-800">
+                    ${escapeHtml(story.content)}
+                </div>
+
+                <div class="flex items-center justify-between mb-6 pb-4 border-b border-zinc-800">
+                    <button onclick="givePogo('${story.id}')" class="bg-red-600 hover:bg-red-500 text-white font-bold text-xs uppercase px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-red-600/20">
+                        <i class="fa-solid fa-fire"></i> <span>¡Dar Pogo! (${story.pogos || 0})</span>
+                    </button>
+                    <span class="text-zinc-500 text-xs">Sincronizado en tiempo real</span>
+                </div>
+
+                <!-- Comentarios -->
+                <div class="space-y-4">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-comments text-amber-500"></i> Comentarios de la Tribu (${story.comments ? story.comments.length : 0})
+                    </h3>
+                    <div class="max-h-48 overflow-y-auto space-y-2 pr-1">
+                        ${commentsHtml}
+                    </div>
+                    <form onsubmit="handleAddComment(event, '${story.id}')" class="space-y-3 pt-2">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <input type="text" id="commentAuthor" required placeholder="Tu nombre" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-red-500">
+                            <input type="text" id="commentText" required placeholder="Escribí un comentario..." class="sm:col-span-2 bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" class="bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs uppercase px-4 py-2 rounded-xl transition-colors">
+                                Enviar comentario
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        window.handleAddComment = async function(e, storyId) {
+            e.preventDefault();
+            const author = document.getElementById('commentAuthor').value.trim();
+            const text = document.getElementById('commentText').value.trim();
+
+            const story = allStories.find(s => s.id === storyId);
+            if(story && db) {
+                const updatedComments = story.comments ? [...story.comments, { author, text }] : [{ author, text }];
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'stories', storyId);
+                    await updateDoc(docRef, { comments: updatedComments });
+                    showToast('💬 Comentario publicado.');
+                } catch (err) {
+                    console.error("Error al comentar:", err);
+                }
+            }
+        }
+
+        window.closeModal = function() {
+            currentOpenModalId = null;
+            const modal = document.getElementById('readModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            document.getElementById('toastText').textContent = msg;
+            icon.className = type === 'success' ? 'fa-solid fa-circle-check text-red-500 text-sm' : 'fa-solid fa-circle-info text-amber-500 text-sm';
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        window.onload = function() {
+            initFirebase();
+        };
+    </script>
+</body>
+</html>
